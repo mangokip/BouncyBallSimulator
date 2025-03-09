@@ -14,3 +14,11 @@ cd BouncyBalls
 
 make
 ./ball_sim
+
+```
+## Planned Features:
+1. MAYBE maximum ball count on screen so I can add collision
+2. Animations for spawning balls / hitting the sides
+3. Different ball "materials" with designated texture files but still random colors
+4. UI to clear balls / change gravity / force ball material
+5. Particle effects
