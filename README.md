@@ -31,8 +31,8 @@ make
 
 ## Demo Images
 -- No Gravity -- 
-![Alt text](images/Screenshot from 2025-03-09 16-44-14.png)
+![Alt text](images/nograv.png)
 -- Gravity --
-![Alt text](images/Screenshot from 2025-03-09 17-39-26.png)
+![Alt text](images/grav.png)
 -- 0 Velocity --
-![Alt text](images/Screenshot from 2025-03-09 17-42-10.png)
+![Alt text](images/0veloc.png)
