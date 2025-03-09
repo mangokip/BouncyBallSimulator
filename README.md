@@ -7,7 +7,13 @@ Do what you want with the code. I plan to add various features when I feel like 
 🖱️ **Left Click** → Spawn a new ball at your mouse location  
 
 ## 📦 Installation & Running
-### **1️⃣ Clone the Repository**
+### **Download ZIP**
+Simply download the zip, unzip it, and then run 
+```sh
+make
+./ball_sim
+```
+### **Clone the Repository**
 ```sh
 git clone https://github.com/YOUR_GITHUB_USERNAME/BouncyBalls.git
 cd BouncyBalls 
