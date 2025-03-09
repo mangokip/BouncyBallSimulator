@@ -1,32 +1,16 @@
-# Prerequisites
-*.d
-
-# Compiled Object files
-*.slo
-*.lo
+# Ignore compiled object files
 *.o
-*.obj
 
-# Precompiled Headers
-*.gch
-*.pch
+# Ignore executable binary
+ball_sim
 
-# Compiled Dynamic libraries
-*.so
-*.dylib
-*.dll
+# Ignore debugging or system files
+.DS_Store
+Thumbs.db
 
-# Fortran module files
-*.mod
-*.smod
+# Ignore VS Code settings (if using it)
+.vscode/
 
-# Compiled Static libraries
-*.lai
-*.la
-*.a
-*.lib
-
-# Executables
-*.exe
+# Ignore Makefile-generated files
 *.out
-*.app
+*.exe
