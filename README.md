@@ -3,6 +3,8 @@ This is a simple C++ project using SFML to simulate randomly colored bouncy ball
 
 Do what you want with the code. I plan to add various features when I feel like it.
 
+This is one of my first projects outside of university in C++. Please be harsh on my code and if you see anything that merits changes or clarification, and especially any bad code / style, PLEASE reach out to me and give feedback so I can learn from this project. Thank you in advance!
+
 ## 🎮 Controls
 🖱️ **Left Click** → Spawn a new ball at your mouse location  
 
