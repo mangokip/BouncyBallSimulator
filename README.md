@@ -28,3 +28,8 @@ make
 3. Different ball "materials" with designated texture files but still random colors
 4. UI to clear balls / change gravity / force ball material
 5. Particle effects
+
+## Demo Images
+![No Gravity](images/Screenshot from 2025-03-09 16-44-14.png)
+![Gravity](images/Screenshot from 2025-03-09 17-39-26.png)
+![Gravity2](images/Screenshot from 2025-03-09 17-42-10.png)
