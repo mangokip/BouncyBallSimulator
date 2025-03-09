@@ -8,7 +8,7 @@ Do what you want with the code. I plan to add various features when I feel like 
 
 ## 📦 Installation & Running
 ### **1️⃣ Clone the Repository**
-sh
+```sh
 git clone https://github.com/YOUR_GITHUB_USERNAME/BouncyBalls.git
 cd BouncyBalls 
 
