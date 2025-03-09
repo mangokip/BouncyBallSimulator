@@ -30,6 +30,9 @@ make
 5. Particle effects
 
 ## Demo Images
-![No Gravity](images/Screenshot from 2025-03-09 16-44-14.png)
-![Gravity](images/Screenshot from 2025-03-09 17-39-26.png)
-![Gravity2](images/Screenshot from 2025-03-09 17-42-10.png)
+-- No Gravity -- 
+![Alt text](images/Screenshot from 2025-03-09 16-44-14.png)
+-- Gravity --
+![Alt text](images/Screenshot from 2025-03-09 17-39-26.png)
+-- 0 Velocity --
+![Alt text](images/Screenshot from 2025-03-09 17-42-10.png)
