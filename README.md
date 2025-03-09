@@ -17,7 +17,7 @@ make
 ```
 ### **Clone the Repository**
 ```sh
-git clone https://github.com/YOUR_GITHUB_USERNAME/BouncyBalls.git
+git clone https://github.com/mangokip/BouncyBalls.git
 cd BouncyBalls 
 
 make
