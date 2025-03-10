@@ -26,11 +26,15 @@ make
 ```
 ## Planned Features:
 1. MAYBE maximum ball count on screen so I can add collision
-2. Animations for spawning balls / hitting the sides
+2. More creative animations for wall collision
 3. Different ball "materials" with designated texture files but still random colors
-4. UI to clear balls / change gravity / force ball material
-5. Particle effects
+4. UI additions / cleanup
+5. Friction toggle / other physics
 
+## Finished Features:
+1. Particles on collision
+2. UI for clearing balls, toggling gravity, increasing/decreasing ball speed
+   
 ## Demo Images
 -- No Gravity -- 
 ![Alt text](images/nogravity.png)
