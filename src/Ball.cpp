@@ -1,3 +1,6 @@
+//
+// Created by bryce-klein on 3/8/25.
+//
 #include "Ball.hpp"
 #include "Global.hpp"
 #include <SFML/Graphics/Color.hpp>
@@ -78,21 +81,21 @@ void Ball::update(sf::RenderWindow& window, bool gravityEnabled) {
   // left wall collision
   if (pos.x - radius < 0) {
     // spawn particles in a crescent from 0 to PI/2 (0 to 90°)
-    spawnParticles(sf::Vector2f(pos.x, pos.y), 30, 0.0f, 1.57f);
+    spawnParticles(sf::Vector2f(pos.x, pos.y), 10, 0.0f, 1.57f);
     vel.x = -vel.x;
     pos.x = radius;
   }
   // right wall collision
   if (pos.x + radius > winWidth) {
     // spawn particles in a crescent from PI to 3*PI/2 (180° to 270°)
-    spawnParticles(sf::Vector2f(pos.x, pos.y), 30, 3.14f, 4.71f);
+    spawnParticles(sf::Vector2f(pos.x, pos.y), 10, 3.14f, 4.71f);
     vel.x = -vel.x;
     pos.x = winWidth - radius;
   }
 
   // floor collision
   if (pos.y + radius > winHeight) {
-    spawnParticles(sf::Vector2f(pos.x, pos.y), 30, 4.71f, 6.28f);
+    spawnParticles(sf::Vector2f(pos.x, pos.y), 10, 4.71f, 6.28f);
 
     if (gravityEnabled) {
       vel.y = -vel.y * 0.98f;
@@ -109,7 +112,7 @@ void Ball::update(sf::RenderWindow& window, bool gravityEnabled) {
   // ceiling collision
   if (pos.y - radius < 0) {
     // spawn particles downward: e.g., from 1.57 to 3.14 radians (90° to 180°)
-    spawnParticles(sf::Vector2f(pos.x, pos.y), 30, 1.57f, 3.14f);
+    spawnParticles(sf::Vector2f(pos.x, pos.y), 10, 1.57f, 3.14f);
     vel.y = -vel.y;
     pos.y = radius;
   }
