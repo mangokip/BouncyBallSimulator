@@ -17,6 +17,10 @@ int main()
     Button gravityButton(50, 50, 240, 70, "Toggle Gravity");  // Move it more to the left
     bool gravityEnabled = true;
 
+    // ------ clear button -----
+    Button clearButton(50,150,200, 70, "Clear Balls");
+
+
     // ----- main loop for when window is open -----
     while (window.isOpen())
     {
@@ -40,6 +44,11 @@ int main()
                     balls.push_back(std::make_unique<Ball>(clickPos)); // store a pointer to a ball
                 }
 
+                // ----- clear button -----
+                if (clearButton.isClicked(clickPos)) {
+                    balls.clear();
+                }
+
             }
 
         }
@@ -47,6 +56,7 @@ int main()
         // mapping cords to apply hover effect
         sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
         gravityButton.setHoverEffect(mousePos);
+        clearButton.setHoverEffect(mousePos);
 
         for (auto& ball : balls) {
             ball->update(window, gravityEnabled);
@@ -82,6 +92,7 @@ int main()
              */
         }
         gravityButton.draw(window);
+        clearButton.draw(window);
         window.display(); // updates rendered frame from above
 
     }
