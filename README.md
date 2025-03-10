@@ -33,8 +33,7 @@ make
 
 ## Demo Images
 -- No Gravity -- 
-![Alt text](images/nograv.png)
+![Alt text](images/nogravity.png)
 -- Gravity --
-![Alt text](images/grav.png)
--- 0 Velocity --
-![Alt text](images/0veloc.png)
+![Alt text](images/gravity.png)
+
