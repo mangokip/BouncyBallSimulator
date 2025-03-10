@@ -75,14 +75,25 @@ void Ball::update(sf::RenderWindow& window, bool gravityEnabled) {
   float winHeight = window.getSize().y;
   float radius = circle.getRadius();
 
-  // checking horizontal collision
-  if (pos.x - radius < 0 || pos.x + radius > winWidth) {
+  // left wall collision
+  if (pos.x - radius < 0) {
+    // spawn particles in a crescent from 0 to PI/2 (0 to 90°)
+    spawnParticles(sf::Vector2f(pos.x, pos.y), 100, 0.0f, 1.57f);
     vel.x = -vel.x;
-    pos.x = std::max(radius, std::min(pos.x, winWidth - radius));
+    pos.x = radius;
+  }
+  // right wall collision
+  if (pos.x + radius > winWidth) {
+    // spawn particles in a crescent from PI to 3*PI/2 (180° to 270°)
+    spawnParticles(sf::Vector2f(pos.x, pos.y), 100, 3.14f, 4.71f);
+    vel.x = -vel.x;
+    pos.x = winWidth - radius;
   }
 
   // floor collision
   if (pos.y + radius > winHeight) {
+    spawnParticles(sf::Vector2f(pos.x, pos.y), 100, 4.71f, 6.28f);
+
     if (gravityEnabled) {
       vel.y = -vel.y * 0.98f;
       vel.x *= 0.995f;
@@ -93,11 +104,16 @@ void Ball::update(sf::RenderWindow& window, bool gravityEnabled) {
   }
 
 
+
+
   // ceiling collision
   if (pos.y - radius < 0) {
+    // spawn particles downward: e.g., from 1.57 to 3.14 radians (90° to 180°)
+    spawnParticles(sf::Vector2f(pos.x, pos.y), 100, 1.57f, 3.14f);
     vel.y = -vel.y;
     pos.y = radius;
   }
+
 
   circle.setPosition(pos);
 }

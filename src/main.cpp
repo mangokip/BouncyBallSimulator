@@ -11,7 +11,7 @@ int main()
     std::srand(static_cast<unsigned>(std::time(nullptr))); // seed randomness once
 
     // ----- window setup + ball setup -----
-    sf::RenderWindow window(sf::VideoMode(1000, 1000), "SFML works!");
+    sf::RenderWindow window(sf::VideoMode(1000, 1000), "Ball Simulator");
     std::vector<std::unique_ptr<Ball>> balls; // need unique_ptr to avoid memory leaks, if out of scope then delete
 
     // ----- gravity button -----
@@ -26,6 +26,9 @@ int main()
 
     // ----- decrease speed button -----
     Button decreaseSpeedButton(50,350,270,70, "Decrease Speed");
+
+    // ----- particle clock -----
+    sf::Clock clock;
 
     // ----- main loop for when window is open -----
     while (window.isOpen())
@@ -95,6 +98,17 @@ int main()
         increaseSpeedButton.setHoverEffect(mousePos);
         decreaseSpeedButton.setHoverEffect(mousePos);
 
+        // ----- update particles -----
+        float dt = clock.restart().asSeconds();
+        for (auto it = particles.begin(); it != particles.end(); ) {
+            it->update(dt);
+            if (!it->isAlive()) {
+                it = particles.erase(it);
+            } else {
+                ++it;
+            }
+        }
+
         for (auto& ball : balls) {
             ball->update(window, gravityEnabled);
         }
@@ -127,10 +141,15 @@ int main()
              *
              */
         }
+
+        for (auto& particle : particles) {
+            particle.draw(window);
+        }
         gravityButton.draw(window);
         clearButton.draw(window);
         increaseSpeedButton.draw(window);
         decreaseSpeedButton.draw(window);
+
         window.display(); // updates rendered frame from above
 
     }

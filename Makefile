@@ -1,7 +1,7 @@
 CXX = g++
 CXXFLAGS = -Wall -Wextra -std=c++17
 
-SRC = src/main.cpp src/Ball.cpp src/Button.cpp src/Global.cpp  # 🔹 Added Button.cpp
+SRC = src/main.cpp src/Ball.cpp src/Button.cpp src/Global.cpp src/Particle.cpp # 🔹 Added Button.cpp
 OBJ = $(SRC:.cpp=.o)
 INCLUDE = -Iinclude
 
