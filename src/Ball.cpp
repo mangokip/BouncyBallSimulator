@@ -1,5 +1,5 @@
 #include "Ball.hpp"
-
+#include "Global.hpp"
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/System/Vector2.hpp> //sf::Vector2f for 2d positions / velocity
@@ -15,9 +15,11 @@ Ball::Ball(sf::Vector2f position) {
   // set initial velocities using a smaller range:
   // range: -0.25 to 0.25. If below a threshold, enforce a minimum speed.
   float speedX = (std::rand() % 101 - 50) / 200.0f;
+  speedX *= globalSpeedMultiplier;
   if (std::abs(speedX) < 0.15f) { speedX = (speedX >= 0) ? 0.15f : -0.15f; } // ensure a lower minimum
 
   float speedY = (std::rand() % 101 - 50) / 200.0f;
+  speedY *= globalSpeedMultiplier;
   if (std::abs(speedY) < 0.15f) { speedY = (speedY >= 0) ? 0.15f : -0.15f; } // ensure a lower minimum
 
   vel = sf::Vector2f(speedX, speedY);

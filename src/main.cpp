@@ -1,4 +1,5 @@
 #include "Ball.hpp"
+#include "Global.hpp"
 #include "Button.hpp"
 #include <SFML/Graphics.hpp>
 #include <iostream>
@@ -20,6 +21,11 @@ int main()
     // ------ clear button -----
     Button clearButton(50,150,200, 70, "Clear Balls");
 
+    // ----- increase speed button -----
+    Button increaseSpeedButton(50,250, 270, 70, "Increase Speed");
+
+    // ----- decrease speed button -----
+    Button decreaseSpeedButton(50,350,270,70, "Decrease Speed");
 
     // ----- main loop for when window is open -----
     while (window.isOpen())
@@ -37,17 +43,46 @@ int main()
                 // push_back increases vector size for new ball
                 sf::Vector2f clickPos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
 
-                // ----- gravity button check ------
+
+                bool buttonClicked = false;
+                // ----- toggle gravity button check -----
                 if (gravityButton.isClicked(clickPos)) {
                     gravityEnabled = !gravityEnabled;
-                } else {
-                    balls.push_back(std::make_unique<Ball>(clickPos)); // store a pointer to a ball
+                    buttonClicked = true;
                 }
-
-                // ----- clear button -----
+                // ----- clear ball button check-----
                 if (clearButton.isClicked(clickPos)) {
                     balls.clear();
+                    buttonClicked = true;
                 }
+
+                // ----- increase speed button check -----
+                if (increaseSpeedButton.isClicked(clickPos)) {
+                    globalSpeedMultiplier *= 1.1f;
+                    std::cout << "globalSpeedMultiplier = " << globalSpeedMultiplier << std::endl;
+
+                    for (auto &ball : balls) {
+                        ball->setVelocity(ball->getVelocity() * 1.1f);
+                    }
+                    buttonClicked = true;
+                }
+
+                // ----- decrease speed button check -----
+                if (decreaseSpeedButton.isClicked(clickPos)) {
+                    globalSpeedMultiplier *= 0.9f;
+                    std::cout << "globalSpeedMultiplier = " << globalSpeedMultiplier << std::endl;
+
+                    for (auto &ball : balls) {
+                        ball->setVelocity(ball->getVelocity() * 0.9f);
+                    }
+                    buttonClicked = true;
+                }
+
+                // ----- general screen click -----
+                if (!buttonClicked) {
+                    balls.push_back(std::make_unique<Ball>(clickPos));
+                }
+
 
             }
 
@@ -57,6 +92,8 @@ int main()
         sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
         gravityButton.setHoverEffect(mousePos);
         clearButton.setHoverEffect(mousePos);
+        increaseSpeedButton.setHoverEffect(mousePos);
+        decreaseSpeedButton.setHoverEffect(mousePos);
 
         for (auto& ball : balls) {
             ball->update(window, gravityEnabled);
@@ -67,7 +104,6 @@ int main()
         // not using Ball* ball : balls because balls stores a unique pointer and
         // not raw ball pointers.
         for (auto& ball : balls) {
-           ball->update(window, gravityEnabled); // calls Ball::update(sf::RenderWindow&) to update ball qualities
             ball->draw(window); // calls Ball::draw(sf::RenderWindow&) after
             /* note for myself: balls is a std::vector<std::unique_ptr<Ball>> so it stores smart pointers
              * meaning each ball is a std::unique_ptr<Ball> and not an actual Ball object
@@ -93,6 +129,8 @@ int main()
         }
         gravityButton.draw(window);
         clearButton.draw(window);
+        increaseSpeedButton.draw(window);
+        decreaseSpeedButton.draw(window);
         window.display(); // updates rendered frame from above
 
     }

@@ -12,6 +12,8 @@ class Ball {
 public:
   explicit Ball(sf::Vector2f position);
 
+  sf::Vector2f getVelocity() const { return vel; }
+  void setVelocity(const sf::Vector2f &newVel) { vel = newVel; }
   void update(sf::RenderWindow& window, bool gravityEnabled);
   void draw(sf::RenderWindow& window);
 
