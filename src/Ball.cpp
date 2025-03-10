@@ -5,8 +5,7 @@
 #include "Global.hpp"
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
-#include <SFML/System/Vector2.hpp> //sf::Vector2f for 2d positions / velocity
-
+#include <SFML/System/Vector2.hpp> // sf::Vector2f for 2d positions / velocity
 #include<iostream>
 #include<cstdlib> // std::rand();
 
@@ -15,10 +14,16 @@
 Ball::Ball(sf::Vector2f position) {
   pos = position; //setting parameter
 
-  // set initial velocities using a smaller range:
+  // ------ set initial velocities using a smaller range -----
   // range: -0.25 to 0.25. If below a threshold, enforce a minimum speed.
+
+  // notes: std::rand() % 101 gives int 0-100
+  // -50 gives -50 to +50
+  // dividing by 200.0f gives range of -0.25 to +0.25
   float speedX = (std::rand() % 101 - 50) / 200.0f;
+  // adjusting global speed to carry over to each ball
   speedX *= globalSpeedMultiplier;
+  // if abs speed is less than 0.15, then set it to +-0.15
   if (std::abs(speedX) < 0.15f) { speedX = (speedX >= 0) ? 0.15f : -0.15f; } // ensure a lower minimum
 
   float speedY = (std::rand() % 101 - 50) / 200.0f;
@@ -27,9 +32,9 @@ Ball::Ball(sf::Vector2f position) {
 
   vel = sf::Vector2f(speedX, speedY);
 
+  // not necessary, but introducing random variations so not every ball is identical in movement
   vel.x += ((std::rand() % 10) - 5) * 0.01f;
   vel.y += ((std::rand() % 10) - 5) * 0.01f;
-
 
   float radius = std::max(5.0f, std::min((std::rand() % 26) + 5.0f, 30.0f)); // radius is 5 - 30
   circle.setRadius(radius); // SFML - setRadius defines a CircleShape size
@@ -63,6 +68,7 @@ void Ball::update(sf::RenderWindow& window, bool gravityEnabled) {
 
   // pos: current position
   // vel: movement per frame
+  // new position = old position + velocity
   pos += vel; // moving ball based on velocity, e.g, if vel.x = 1.5 then the ball moves 1.5 pixels a frame
   circle.setPosition(pos);
   // ball will not move too fast upwards and vel.y is needed since gravity is downward acceleration
@@ -78,22 +84,23 @@ void Ball::update(sf::RenderWindow& window, bool gravityEnabled) {
   float winHeight = window.getSize().y;
   float radius = circle.getRadius();
 
-  // left wall collision
+  // ----- left wall collision -----
+  // if center of ball - radius is beyond 0, then it's out of bounds
   if (pos.x - radius < 0) {
-    // spawn particles in a crescent from 0 to PI/2 (0 to 90°)
-    spawnParticles(sf::Vector2f(pos.x, pos.y), 10, 0.0f, 1.57f);
-    vel.x = -vel.x;
-    pos.x = radius;
+    spawnParticles(sf::Vector2f(pos.x, pos.y), 10, 0.0f, 1.57f); // spawn particles in a crescent from 0 to PI/2 (0 to 90°)
+
+    vel.x = -vel.x; // reverse velocity to bounce in opposite direction
+    pos.x = radius; // ball is touching left wall exactly
   }
-  // right wall collision
+  // ----- right wall collision -----
   if (pos.x + radius > winWidth) {
-    // spawn particles in a crescent from PI to 3*PI/2 (180° to 270°)
-    spawnParticles(sf::Vector2f(pos.x, pos.y), 10, 3.14f, 4.71f);
+
+    spawnParticles(sf::Vector2f(pos.x, pos.y), 10, 3.14f, 4.71f); // spawn particles in a crescent from PI to 3*PI/2 (180° to 270°)
     vel.x = -vel.x;
     pos.x = winWidth - radius;
   }
 
-  // floor collision
+  // ----- floor collision -----
   if (pos.y + radius > winHeight) {
     spawnParticles(sf::Vector2f(pos.x, pos.y), 10, 4.71f, 6.28f);
 
@@ -106,17 +113,12 @@ void Ball::update(sf::RenderWindow& window, bool gravityEnabled) {
     pos.y = winHeight - radius;
   }
 
-
-
-
-  // ceiling collision
+  // ----- ceiling collision -----
   if (pos.y - radius < 0) {
-    // spawn particles downward: e.g., from 1.57 to 3.14 radians (90° to 180°)
-    spawnParticles(sf::Vector2f(pos.x, pos.y), 10, 1.57f, 3.14f);
+    spawnParticles(sf::Vector2f(pos.x, pos.y), 10, 1.57f, 3.14f); // spawn particles downward: e.g., from 1.57 to 3.14 radians (90° to 180°)
     vel.y = -vel.y;
     pos.y = radius;
   }
-
 
   circle.setPosition(pos);
 }

@@ -9,6 +9,7 @@
 int main()
 {
     std::srand(static_cast<unsigned>(std::time(nullptr))); // seed randomness once
+    // std::time(nullptr) returns current time as time_t, a long int, and casting it to unsigned as required by std::srand()
 
     // ----- window setup + ball setup -----
     sf::RenderWindow window(sf::VideoMode(1000, 1000), "Ball Simulator");
@@ -31,9 +32,9 @@ int main()
     sf::Clock clock;
 
     // ----- main loop for when window is open -----
-    while (window.isOpen())
+    while (window.isOpen()) // each iteration is ONE frame
     {
-        sf::Event event{}; // SFML will queue various computer events
+        sf::Event event{}; // SFML will queue various computer events, allocated on stack
         while (window.pollEvent(event)) // pollEvent needs an event reference
         {
             if (event.type == sf::Event::Closed) // close window if event is "Closed"
@@ -99,7 +100,15 @@ int main()
         decreaseSpeedButton.setHoverEffect(mousePos);
 
         // ----- update particles -----
-        float dt = clock.restart().asSeconds();
+        float dt = clock.restart().asSeconds(); // returns elapsed time since last restart and resets, converted to sec
+        // ^^ where dt is updating particle positions regardless of whatever frame rate you have
+        /*
+         * notes:
+         * iterating through variable "it" (iterator) set to the beginning of the particles vector
+         * iterates as long as the iterator, it, isn't equal to the end value of the vector
+         * we might remove elements so we use an iterator instead
+         * it -> update(dt) will call the update method of a Particle as pointed to by "it", passing dt
+         */
         for (auto it = particles.begin(); it != particles.end(); ) {
             it->update(dt);
             if (!it->isAlive()) {
