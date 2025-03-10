@@ -1,7 +1,7 @@
 CXX = g++
 CXXFLAGS = -Wall -Wextra -std=c++17
 
-SRC = src/main.cpp src/Ball.cpp
+SRC = src/main.cpp src/Ball.cpp src/Button.cpp  # 🔹 Added Button.cpp
 OBJ = $(SRC:.cpp=.o)
 INCLUDE = -Iinclude
 
@@ -17,4 +17,3 @@ $(TARGET): $(OBJ)
 
 clean:
 	rm -f $(OBJ) $(TARGET)
-

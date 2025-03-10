@@ -12,7 +12,7 @@ class Ball {
 public:
   explicit Ball(sf::Vector2f position);
 
-  void update(sf::RenderWindow& window);
+  void update(sf::RenderWindow& window, bool gravityEnabled);
   void draw(sf::RenderWindow& window);
 
 private:
