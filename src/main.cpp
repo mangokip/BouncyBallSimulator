@@ -1,4 +1,5 @@
 #include "Ball.hpp"
+#include "Button.hpp"
 #include <SFML/Graphics.hpp>
 #include <iostream>
 
@@ -8,12 +9,15 @@ int main()
 {
     std::srand(static_cast<unsigned>(std::time(nullptr))); // seed randomness once
 
+    // ----- window setup + ball setup -----
     sf::RenderWindow window(sf::VideoMode(1000, 1000), "SFML works!");
-    sf::CircleShape shape(100.f);
-    shape.setFillColor(sf::Color::Red);
     std::vector<std::unique_ptr<Ball>> balls; // need unique_ptr to avoid memory leaks, if out of scope then delete
 
+    // ----- gravity button -----
+    Button gravityButton(50, 50, 240, 70, "Toggle Gravity");  // Move it more to the left
+    bool gravityEnabled = true;
 
+    // ----- main loop for when window is open -----
     while (window.isOpen())
     {
         sf::Event event{}; // SFML will queue various computer events
@@ -28,9 +32,24 @@ int main()
                 // std::make_unique<Type = Ball>(clickPos) - new ball at mouse position
                 // push_back increases vector size for new ball
                 sf::Vector2f clickPos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
-                balls.push_back(std::make_unique<Ball>(clickPos)); // Store a pointer to a ball
+
+                // ----- gravity button check ------
+                if (gravityButton.isClicked(clickPos)) {
+                    gravityEnabled = !gravityEnabled;
+                } else {
+                    balls.push_back(std::make_unique<Ball>(clickPos)); // store a pointer to a ball
+                }
+
             }
 
+        }
+
+        // mapping cords to apply hover effect
+        sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
+        gravityButton.setHoverEffect(mousePos);
+
+        for (auto& ball : balls) {
+            ball->update(window, gravityEnabled);
         }
 
         window.clear(); // removing previous frame to avoid ghost effects
@@ -38,7 +57,7 @@ int main()
         // not using Ball* ball : balls because balls stores a unique pointer and
         // not raw ball pointers.
         for (auto& ball : balls) {
-           ball->update(window); // calls Ball::update(sf::RenderWindow&) to update ball qualities
+           ball->update(window, gravityEnabled); // calls Ball::update(sf::RenderWindow&) to update ball qualities
             ball->draw(window); // calls Ball::draw(sf::RenderWindow&) after
             /* note for myself: balls is a std::vector<std::unique_ptr<Ball>> so it stores smart pointers
              * meaning each ball is a std::unique_ptr<Ball> and not an actual Ball object
@@ -62,6 +81,7 @@ int main()
              *
              */
         }
+        gravityButton.draw(window);
         window.display(); // updates rendered frame from above
 
     }

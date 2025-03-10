@@ -7,15 +7,23 @@
 #include<iostream>
 #include<cstdlib> // std::rand();
 
-// ball constructor
+// ----- ball constructor -----
 // initializer: position parameter for where ball is on the window
 Ball::Ball(sf::Vector2f position) {
   pos = position; //setting parameter
 
-  // random velocities in a set range
-  float speedX = (std::rand() % 41 - 20) / 10.0f; // -2 to 2
-  float speedY = (std::rand() % 61 - 30) / 10.0f; // -3 to 3
-  vel = sf::Vector2f(speedX, speedY); //float vector
+  // set initial velocities using a smaller range:
+  // range: -0.25 to 0.25. If below a threshold, enforce a minimum speed.
+  float speedX = (std::rand() % 101 - 50) / 200.0f;
+  if (std::abs(speedX) < 0.15f) { speedX = (speedX >= 0) ? 0.15f : -0.15f; } // ensure a lower minimum
+
+  float speedY = (std::rand() % 101 - 50) / 200.0f;
+  if (std::abs(speedY) < 0.15f) { speedY = (speedY >= 0) ? 0.15f : -0.15f; } // ensure a lower minimum
+
+  vel = sf::Vector2f(speedX, speedY);
+
+  vel.x += ((std::rand() % 10) - 5) * 0.01f;
+  vel.y += ((std::rand() % 10) - 5) * 0.01f;
 
 
   float radius = std::max(5.0f, std::min((std::rand() % 26) + 5.0f, 30.0f)); // radius is 5 - 30
@@ -23,8 +31,7 @@ Ball::Ball(sf::Vector2f position) {
   circle.setPosition(pos); // SFML - setPosition defines starting position for CircleShape
 
   //making gravity extremely weak to avoid balls stopping too fast
-  gravity = (std::rand() % 4 + 1) / 10000.0f; // 0.0001 to 0.0004
-
+  gravity = 0.001f;
 
 
   //just wanted random color
@@ -46,24 +53,17 @@ Ball::Ball(sf::Vector2f position) {
    using a reference for sf::RenderWindow& to pass "window" by reference. The window won't be needlessly copied and can
    be modified directly.
    side note: SFML requires this, copies of sf::RenderWindow are not allowed */
-void Ball::update(sf::RenderWindow& window) {
-  const float maxSpeed = 5.0f; // to prevent speed from getting too fast, this is already a generous value
-  const float friction = 0.98f; // very low friction
-  const float airFriction = 0.999f; // even lower "friction" to slow down horizontal speed
-
+void Ball::update(sf::RenderWindow& window, bool gravityEnabled) {
+  const float maxSpeed = 3.0f; // to prevent speed from getting too fast, this is already a generous value
 
   // pos: current position
   // vel: movement per frame
   pos += vel; // moving ball based on velocity, e.g, if vel.x = 1.5 then the ball moves 1.5 pixels a frame
-
+  circle.setPosition(pos);
   // ball will not move too fast upwards and vel.y is needed since gravity is downward acceleration
-  if (vel.y > -maxSpeed) {
+  if (gravityEnabled && vel.y > -maxSpeed) {
     vel.y += gravity;
   }
-
-  // to halt horizontal motion over time
-  vel.x *= airFriction;
-  if (std::abs(vel.x) < 0.05f) vel.x = 0.0f; // this just stops balls that are extremely close to stopping
 
   if (vel.y > maxSpeed) vel.y = maxSpeed;
   if (vel.y < -maxSpeed) vel.y = -maxSpeed;
@@ -75,22 +75,25 @@ void Ball::update(sf::RenderWindow& window) {
 
   // checking horizontal collision
   if (pos.x - radius < 0 || pos.x + radius > winWidth) {
-    vel.x = -vel.x * 0.99f;
-    //resetting position if out of bounds to properly implement collision
+    vel.x = -vel.x;
     pos.x = std::max(radius, std::min(pos.x, winWidth - radius));
   }
 
   // floor collision
   if (pos.y + radius > winHeight) {
-    vel.y = -vel.y * 0.96f; // flip velocity upwards if past bottom of window and reduces energy
+    if (gravityEnabled) {
+      vel.y = -vel.y * 0.98f;
+      vel.x *= 0.995f;
+    } else {
+      vel.y = -vel.y;
+    }
     pos.y = winHeight - radius;
-
-    vel.x *= friction; // extra friction if at bottom
   }
+
 
   // ceiling collision
   if (pos.y - radius < 0) {
-    vel.y = -vel.y * 0.99f;
+    vel.y = -vel.y;
     pos.y = radius;
   }
 
