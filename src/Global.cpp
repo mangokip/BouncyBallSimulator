@@ -15,6 +15,7 @@ std::vector<sf::Sound> sounds;
 sf::Sound buttonSound;
 sf::Sound spawnSound;
 sf::Sound collisionSound;
+float globalGravity = 1.0f;
 
 void spawnParticles(sf::Vector2f position, int count, float angleStart, float angleEnd) {
   const size_t MAX_PARTICLES = 1000;  // set an upper limit

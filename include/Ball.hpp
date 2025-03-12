@@ -16,12 +16,14 @@ public:
   void setVelocity(const sf::Vector2f &newVel) { vel = newVel; }
   void update(sf::RenderWindow& window, bool gravityEnabled);
   void draw(sf::RenderWindow& window);
+  void resetVelocity() { vel = baseVelocity;}
 
 private:
   sf::Vector2f pos{};
   sf::Vector2f vel{};
   float gravity;
   sf::CircleShape circle{};
+  sf::Vector2f baseVelocity;
 };
 
 #endif //BALL_HPP

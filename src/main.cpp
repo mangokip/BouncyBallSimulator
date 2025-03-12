@@ -1,10 +1,12 @@
+#include "../include/Global.hpp"
 #include "Ball.hpp"
-#include "Sound.hpp"
-#include "Global.hpp"
 #include "Button.hpp"
+#include "Global.hpp"
+#include "Sound.hpp"
+
+#include <SFML/Audio.hpp>
 #include <SFML/Graphics.hpp>
 #include <iostream>
-#include <SFML/Audio.hpp>
 #include <memory>
 
 int main()
@@ -43,6 +45,8 @@ int main()
     Button gravityButton(50, 50, 240, 70, "Toggle Gravity");
     bool gravityEnabled = true;
 
+    Button maxGravityButton(50, 450, 310, 70, "Toggle 100x Gravity");
+
     // ------ clear button -----
     Button clearButton(50,150,200, 70, "Clear Balls");
 
@@ -51,6 +55,9 @@ int main()
 
     // ----- decrease speed button -----
     Button decreaseSpeedButton(50,350,270,70, "Decrease Speed");
+
+    // ----- reset speed button -----
+    Button resetSpeedButton(50, 550, 230,70, "Reset Speed");
 
     // ----- particle clock -----
     sf::Clock clock;
@@ -79,6 +86,18 @@ int main()
                     gravityEnabled = !gravityEnabled;
                     buttonClicked = true;
                 }
+
+                // ----- 100x gravity button -----
+                if (maxGravityButton.isClicked(clickPos)) {
+                    buttonSound.play();
+                    if (globalGravity == 1.0f)
+                        globalGravity = 100000.0f;
+                    else
+                        globalGravity = 1.0f;
+                    buttonClicked = true;
+
+                }
+
                 // ----- clear ball button check-----
                 if (clearButton.isClicked(clickPos)) {
                     buttonSound.play();
@@ -110,6 +129,17 @@ int main()
                     buttonClicked = true;
                 }
 
+                // ----- reset speed button check -----
+                if (resetSpeedButton.isClicked(clickPos)) {
+                    globalSpeedMultiplier = 1.0f;
+                    for (auto &ball : balls) {
+                        ball->resetVelocity();
+                    }
+                    std::cout << "globalSpeedMultiplier = " << globalSpeedMultiplier << std::endl;
+                    buttonSound.play();
+                    buttonClicked = true;
+                }
+
                 // ----- general screen click -----
                 if (!buttonClicked) {
                     float randomPitch = 0.5f + static_cast<float>(std::rand()) / RAND_MAX * (2.5f - 0.5f);
@@ -126,9 +156,11 @@ int main()
         // mapping cords to apply hover effect
         sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
         gravityButton.setHoverEffect(mousePos);
+        maxGravityButton.setHoverEffect(mousePos);
         clearButton.setHoverEffect(mousePos);
         increaseSpeedButton.setHoverEffect(mousePos);
         decreaseSpeedButton.setHoverEffect(mousePos);
+        resetSpeedButton.setHoverEffect(mousePos);
 
         // ----- update particles -----
         float dt = clock.restart().asSeconds(); // returns elapsed time since last restart and resets, converted to sec
@@ -186,10 +218,11 @@ int main()
             particle.draw(window);
         }
         gravityButton.draw(window);
+        maxGravityButton.draw(window);
         clearButton.draw(window);
         increaseSpeedButton.draw(window);
         decreaseSpeedButton.draw(window);
-
+        resetSpeedButton.draw(window);
         window.display(); // updates rendered frame from above
 
     }

@@ -13,6 +13,7 @@ extern std::vector<sf::Sound> sounds;
 extern sf::Sound collisionSound;
 extern sf::Sound spawnSound;
 extern sf::Sound buttonSound;
+extern float globalGravity;
 
 
 // default

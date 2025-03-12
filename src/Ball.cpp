@@ -34,6 +34,7 @@ Ball::Ball(sf::Vector2f position) {
   if (std::abs(speedY) < 0.15f) { speedY = (speedY >= 0) ? 0.15f : -0.15f; } // ensure a lower minimum
 
   vel = sf::Vector2f(speedX, speedY);
+  baseVelocity = vel;
 
   // not necessary, but introducing random variations so not every ball is identical in movement
   vel.x += ((std::rand() % 10) - 5) * 0.01f;
@@ -67,7 +68,6 @@ Ball::Ball(sf::Vector2f position) {
    be modified directly.
    side note: SFML requires this, copies of sf::RenderWindow are not allowed */
 void Ball::update(sf::RenderWindow& window, bool gravityEnabled) {
-  const float maxSpeed = 3.0f; // to prevent speed from getting too fast, this is already a generous value
 
   // pos: current position
   // vel: movement per frame
@@ -75,12 +75,9 @@ void Ball::update(sf::RenderWindow& window, bool gravityEnabled) {
   pos += vel; // moving ball based on velocity, e.g, if vel.x = 1.5 then the ball moves 1.5 pixels a frame
   circle.setPosition(pos);
   // ball will not move too fast upwards and vel.y is needed since gravity is downward acceleration
-  if (gravityEnabled && vel.y > -maxSpeed) {
-    vel.y += gravity;
+  if (gravityEnabled) {
+    vel.y += gravity * globalGravity;
   }
-
-  if (vel.y > maxSpeed) vel.y = maxSpeed;
-  if (vel.y < -maxSpeed) vel.y = -maxSpeed;
 
   // variables to implement wall collision
   float winWidth = window.getSize().x;
@@ -115,7 +112,10 @@ void Ball::update(sf::RenderWindow& window, bool gravityEnabled) {
     float randomPitch = 0.3f + static_cast<float>(std::rand()) / RAND_MAX * (3.0f - 0.3f);
     collisionSound.setPitch(randomPitch);
     collisionSound.play();
-    if (gravityEnabled) {
+    if (gravityEnabled && globalGravity >= 100.0f) {
+      vel.y = 0.0f;
+      vel.x *= 0.90f;
+    } else if (gravityEnabled) {
       vel.y = -vel.y * 0.98f;
       vel.x *= 0.995f;
     } else {
@@ -123,6 +123,7 @@ void Ball::update(sf::RenderWindow& window, bool gravityEnabled) {
     }
     pos.y = winHeight - radius;
   }
+
 
   // ----- ceiling collision -----
   if (pos.y - radius < 0) {
