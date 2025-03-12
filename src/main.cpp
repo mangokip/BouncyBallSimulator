@@ -1,9 +1,10 @@
 #include "Ball.hpp"
+#include "Sound.hpp"
 #include "Global.hpp"
 #include "Button.hpp"
 #include <SFML/Graphics.hpp>
 #include <iostream>
-
+#include <SFML/Audio.hpp>
 #include <memory>
 
 int main()
@@ -15,8 +16,31 @@ int main()
     sf::RenderWindow window(sf::VideoMode(1000, 1000), "Ball Simulator");
     std::vector<std::unique_ptr<Ball>> balls; // need unique_ptr to avoid memory leaks, if out of scope then delete
 
+    // ----- sound -----
+    if (!sound.loadSound("collision", "assets/sounds/SLURP.wav")) {
+        std::cerr << "Failed to load collision sound." << std::endl;
+    }
+    if (!sound.loadSound("button", "assets/sounds/hl2.wav")) {
+        std::cerr << "Failed to load button sound." << std::endl;
+    }
+    if (!sound.loadSound("spawn", "assets/sounds/flap.wav")) {
+        std::cerr << "Failed to load spawn sound." << std::endl;
+    }
+    collisionSound.setBuffer(sound.getSound("collision"));
+    collisionSound.setVolume(100.0f);
+
+    buttonSound.setBuffer(sound.getSound("button"));
+    buttonSound.setVolume(40.0f);
+    spawnSound.setBuffer(sound.getSound("spawn"));
+
+
+    sounds.push_back(collisionSound);
+    sounds.push_back(buttonSound);
+    sounds.push_back(spawnSound);
+
+
     // ----- gravity button -----
-    Button gravityButton(50, 50, 240, 70, "Toggle Gravity");  // Move it more to the left
+    Button gravityButton(50, 50, 240, 70, "Toggle Gravity");
     bool gravityEnabled = true;
 
     // ------ clear button -----
@@ -51,17 +75,20 @@ int main()
                 bool buttonClicked = false;
                 // ----- toggle gravity button check -----
                 if (gravityButton.isClicked(clickPos)) {
+                    buttonSound.play();
                     gravityEnabled = !gravityEnabled;
                     buttonClicked = true;
                 }
                 // ----- clear ball button check-----
                 if (clearButton.isClicked(clickPos)) {
+                    buttonSound.play();
                     balls.clear();
                     buttonClicked = true;
                 }
 
                 // ----- increase speed button check -----
                 if (increaseSpeedButton.isClicked(clickPos)) {
+                    buttonSound.play();
                     globalSpeedMultiplier *= 1.1f;
                     std::cout << "globalSpeedMultiplier = " << globalSpeedMultiplier << std::endl;
 
@@ -73,6 +100,7 @@ int main()
 
                 // ----- decrease speed button check -----
                 if (decreaseSpeedButton.isClicked(clickPos)) {
+                    buttonSound.play();
                     globalSpeedMultiplier *= 0.9f;
                     std::cout << "globalSpeedMultiplier = " << globalSpeedMultiplier << std::endl;
 
@@ -84,6 +112,9 @@ int main()
 
                 // ----- general screen click -----
                 if (!buttonClicked) {
+                    float randomPitch = 0.5f + static_cast<float>(std::rand()) / RAND_MAX * (2.5f - 0.5f);
+                    spawnSound.setPitch(randomPitch);
+                    spawnSound.play();
                     balls.push_back(std::make_unique<Ball>(clickPos));
                 }
 

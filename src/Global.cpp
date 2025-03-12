@@ -3,9 +3,18 @@
 #include <cstdlib>
 #include <cmath>
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
+#include "Sound.hpp"
+#include <iostream>
 
 float globalSpeedMultiplier = 1.0f;
 std::vector<Particle> particles;
+
+Sound sound;
+std::vector<sf::Sound> sounds;
+sf::Sound buttonSound;
+sf::Sound spawnSound;
+sf::Sound collisionSound;
 
 void spawnParticles(sf::Vector2f position, int count, float angleStart, float angleEnd) {
   const size_t MAX_PARTICLES = 1000;  // set an upper limit
@@ -35,3 +44,5 @@ void spawnParticles(sf::Vector2f position, int count, float angleStart, float an
     particles.push_back(p);
   }
 }
+
+

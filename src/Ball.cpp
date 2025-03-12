@@ -8,10 +8,13 @@
 #include <SFML/System/Vector2.hpp> // sf::Vector2f for 2d positions / velocity
 #include<iostream>
 #include<cstdlib> // std::rand();
+#include"Sound.hpp"
+
 
 // ----- ball constructor -----
 // initializer: position parameter for where ball is on the window
 Ball::Ball(sf::Vector2f position) {
+
   pos = position; //setting parameter
 
   // ------ set initial velocities using a smaller range -----
@@ -84,11 +87,14 @@ void Ball::update(sf::RenderWindow& window, bool gravityEnabled) {
   float winHeight = window.getSize().y;
   float radius = circle.getRadius();
 
+
   // ----- left wall collision -----
   // if center of ball - radius is beyond 0, then it's out of bounds
   if (pos.x - radius < 0) {
     spawnParticles(sf::Vector2f(pos.x, pos.y), 10, 0.0f, 1.57f); // spawn particles in a crescent from 0 to PI/2 (0 to 90°)
-
+    float randomPitch = 0.3f + static_cast<float>(std::rand()) / RAND_MAX * (3.0f - 0.3f);
+    collisionSound.setPitch(randomPitch);
+    collisionSound.play();
     vel.x = -vel.x; // reverse velocity to bounce in opposite direction
     pos.x = radius; // ball is touching left wall exactly
   }
@@ -96,6 +102,9 @@ void Ball::update(sf::RenderWindow& window, bool gravityEnabled) {
   if (pos.x + radius > winWidth) {
 
     spawnParticles(sf::Vector2f(pos.x, pos.y), 10, 3.14f, 4.71f); // spawn particles in a crescent from PI to 3*PI/2 (180° to 270°)
+    float randomPitch = 0.3f + static_cast<float>(std::rand()) / RAND_MAX * (3.0f - 0.3f);
+    collisionSound.setPitch(randomPitch);
+    collisionSound.play();
     vel.x = -vel.x;
     pos.x = winWidth - radius;
   }
@@ -103,7 +112,9 @@ void Ball::update(sf::RenderWindow& window, bool gravityEnabled) {
   // ----- floor collision -----
   if (pos.y + radius > winHeight) {
     spawnParticles(sf::Vector2f(pos.x, pos.y), 10, 4.71f, 6.28f);
-
+    float randomPitch = 0.3f + static_cast<float>(std::rand()) / RAND_MAX * (3.0f - 0.3f);
+    collisionSound.setPitch(randomPitch);
+    collisionSound.play();
     if (gravityEnabled) {
       vel.y = -vel.y * 0.98f;
       vel.x *= 0.995f;
@@ -115,6 +126,9 @@ void Ball::update(sf::RenderWindow& window, bool gravityEnabled) {
 
   // ----- ceiling collision -----
   if (pos.y - radius < 0) {
+    float randomPitch = 0.3f + static_cast<float>(std::rand()) / RAND_MAX * (3.0f - 0.3f);
+    collisionSound.setPitch(randomPitch);
+    collisionSound.play();
     spawnParticles(sf::Vector2f(pos.x, pos.y), 10, 1.57f, 3.14f); // spawn particles downward: e.g., from 1.57 to 3.14 radians (90° to 180°)
     vel.y = -vel.y;
     pos.y = radius;
