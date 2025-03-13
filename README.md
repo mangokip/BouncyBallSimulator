@@ -35,9 +35,7 @@ make
 1. Particles on collision
 2. UI for clearing balls, toggling gravity, increasing/decreasing ball speed
    
-## Demo Images
--- No Gravity -- 
-![Alt text](images/nogravity.png)
--- Gravity --
-![Alt text](images/gravity.png)
+## Demo 
+![Alt text](images/balldemo.gif)
+
 
