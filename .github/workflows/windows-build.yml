@@ -20,7 +20,7 @@ jobs:
             git
             make
             mingw-w64-ucrt-x86_64-toolchain
-            mingw-w64-ucrt-x86_64-sfml
+            mingw-w64-ucrt-x86_64-sfml2
 
       - name: Build
         shell: msys2 {0}
