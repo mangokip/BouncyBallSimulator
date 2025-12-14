@@ -1,4 +1,4 @@
-name: Windows build (SFML 2.6.1, MINGW64)
+name: Windows build (SFML 2.6.1, MSYS2 MINGW64)
 
 on:
   push:
@@ -7,8 +7,10 @@ on:
 jobs:
   build:
     runs-on: windows-latest
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: Setup MSYS2 (MINGW64)
         uses: msys2/setup-msys2@v2
@@ -17,38 +19,76 @@ jobs:
           update: true
           install: >-
             git
+            make
             mingw-w64-x86_64-toolchain
             mingw-w64-x86_64-cmake
-            mingw-w64-x86_64-make
             mingw-w64-x86_64-pkgconf
 
       - name: Build and install SFML 2.6.1
         shell: msys2 {0}
         run: |
-          git clone --branch 2.6.1 https://github.com/SFML/SFML.git
+          set -euxo pipefail
+          git clone --depth 1 --branch 2.6.1 https://github.com/SFML/SFML.git
           cd SFML
-          cmake -B build -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/mingw64
+          cmake -B build -G "MinGW Makefiles" \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_INSTALL_PREFIX=/mingw64
           cmake --build build --target install
 
-      - name: Build your project
+      - name: Build project (Makefile)
         shell: msys2 {0}
         run: |
-          make
+          set -euxo pipefail
+          if command -v make >/dev/null 2>&1; then
+            make
+          elif command -v mingw32-make >/dev/null 2>&1; then
+            mingw32-make
+          else
+            echo "Neither make nor mingw32-make found!"
+            exit 1
+          fi
 
-      - name: Package exe + assets + runtime dlls
+      - name: Package exe + assets + required DLLs
         shell: msys2 {0}
         run: |
+          set -euxo pipefail
           mkdir -p dist
-          cp -f ball_sim.exe dist/ || cp -f ball_sim dist/ || true
-          cp -r assets dist/ || true
 
-          # Common MinGW runtime DLLs (needed on clean Windows machines)
+          if [ -f "ball_sim.exe" ]; then
+            EXE="ball_sim.exe"
+          elif [ -f "ball_sim" ]; then
+            cp -f "ball_sim" "dist/ball_sim.exe"
+            EXE="dist/ball_sim.exe"
+          else
+            EXE_FOUND="$(find . -maxdepth 2 -type f -name '*.exe' ! -path './SFML/*' ! -path './dist/*' | head -n 1 || true)"
+            if [ -z "$EXE_FOUND" ]; then
+              echo "No executable found. Check your Makefile output name."
+              ls -la
+              exit 1
+            fi
+            cp -f "$EXE_FOUND" dist/
+            EXE="dist/$(basename "$EXE_FOUND")"
+          fi
+
+          if [ "$EXE" = "ball_sim.exe" ]; then
+            cp -f "$EXE" dist/
+            EXE="dist/ball_sim.exe"
+          fi
+
+          if [ -d "assets" ]; then
+            cp -r assets dist/
+          fi
+
           cp -f /mingw64/bin/libgcc_s_seh-1.dll /mingw64/bin/libstdc++-6.dll /mingw64/bin/libwinpthread-1.dll dist/ || true
 
-          # SFML 2 DLLs (copy the ones you actually link against)
-          cp -f /mingw64/bin/sfml-graphics-2.dll /mingw64/bin/sfml-window-2.dll /mingw64/bin/sfml-system-2.dll dist/ || true
-          # If you link audio too, uncomment:
-          # cp -f /mingw64/bin/sfml-audio-2.dll /mingw64/bin/openal32.dll dist/ || true
+          if command -v ldd >/dev/null 2>&1; then
+            ldd "$EXE" | awk '/\/mingw64\/bin\/.*\.dll/ {print $3}' | while read -r dll; do
+              [ -f "$dll" ] && cp -n "$dll" dist/ || true
+            done
+          fi
+
+          echo "Packaged contents:"
+          ls -la dist
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
