@@ -1,0 +1,42 @@
+name: Windows build (MSYS2)
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup MSYS2 (UCRT64)
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: UCRT64
+          update: true
+          install: >-
+            git
+            make
+            mingw-w64-ucrt-x86_64-toolchain
+            mingw-w64-ucrt-x86_64-sfml
+
+      - name: Build
+        shell: msys2 {0}
+        run: |
+          make
+
+      - name: Package (exe + assets)
+        shell: msys2 {0}
+        run: |
+          mkdir -p dist
+          # adjust the filename here if your Makefile outputs a different name
+          cp -f ball_sim.exe dist/ || cp -f ball_sim dist/ || true
+          cp -r assets dist/ || true
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: BouncyBallSimulator-windows
+          path: dist
