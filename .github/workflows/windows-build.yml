@@ -1,4 +1,4 @@
-name: Windows build (SFML 2.6.1 manual build)
+name: Windows build (SFML 2.6.1, MINGW64)
 
 on:
   push:
@@ -10,37 +10,45 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup MSYS2 (UCRT64)
+      - name: Setup MSYS2 (MINGW64)
         uses: msys2/setup-msys2@v2
         with:
-          msystem: UCRT64
+          msystem: MINGW64
           update: true
           install: >-
             git
-            make
-            mingw-w64-ucrt-x86_64-toolchain
-            mingw-w64-ucrt-x86_64-cmake
-            mingw-w64-ucrt-x86_64-pkgconf
+            mingw-w64-x86_64-toolchain
+            mingw-w64-x86_64-cmake
+            mingw-w64-x86_64-make
+            mingw-w64-x86_64-pkgconf
 
       - name: Build and install SFML 2.6.1
         shell: msys2 {0}
         run: |
           git clone --branch 2.6.1 https://github.com/SFML/SFML.git
           cd SFML
-          cmake -B build -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/ucrt64
+          cmake -B build -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/mingw64
           cmake --build build --target install
 
-      - name: buildd
+      - name: Build your project
         shell: msys2 {0}
         run: |
           make
 
-      - name: Package .exe + assets
+      - name: Package exe + assets + runtime dlls
         shell: msys2 {0}
         run: |
           mkdir -p dist
           cp -f ball_sim.exe dist/ || cp -f ball_sim dist/ || true
           cp -r assets dist/ || true
+
+          # Common MinGW runtime DLLs (needed on clean Windows machines)
+          cp -f /mingw64/bin/libgcc_s_seh-1.dll /mingw64/bin/libstdc++-6.dll /mingw64/bin/libwinpthread-1.dll dist/ || true
+
+          # SFML 2 DLLs (copy the ones you actually link against)
+          cp -f /mingw64/bin/sfml-graphics-2.dll /mingw64/bin/sfml-window-2.dll /mingw64/bin/sfml-system-2.dll dist/ || true
+          # If you link audio too, uncomment:
+          # cp -f /mingw64/bin/sfml-audio-2.dll /mingw64/bin/openal32.dll dist/ || true
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
