@@ -1,4 +1,4 @@
-name: Windows build (MSYS2)
+name: Windows build (SFML 2.6.1 manual build)
 
 on:
   push:
@@ -7,7 +7,6 @@ on:
 jobs:
   build:
     runs-on: windows-latest
-
     steps:
       - uses: actions/checkout@v4
 
@@ -20,18 +19,26 @@ jobs:
             git
             make
             mingw-w64-ucrt-x86_64-toolchain
-            mingw-w64-ucrt-x86_64-sfml2
+            mingw-w64-ucrt-x86_64-cmake
+            mingw-w64-ucrt-x86_64-pkgconf
 
-      - name: Build
+      - name: Build and install SFML 2.6.1
+        shell: msys2 {0}
+        run: |
+          git clone --branch 2.6.1 https://github.com/SFML/SFML.git
+          cd SFML
+          cmake -B build -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/ucrt64
+          cmake --build build --target install
+
+      - name: buildd
         shell: msys2 {0}
         run: |
           make
 
-      - name: Package (exe + assets)
+      - name: Package .exe + assets
         shell: msys2 {0}
         run: |
           mkdir -p dist
-          # adjust the filename here if your Makefile outputs a different name
           cp -f ball_sim.exe dist/ || cp -f ball_sim dist/ || true
           cp -r assets dist/ || true
 
